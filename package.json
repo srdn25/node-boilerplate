@@ -9,6 +9,7 @@
   },
   "scripts": {
     "start": "node --env-file=.env index.js",
+    "dev": "NODE_ENV=dev node --env-file=.env index.js",
     "lint": "eslint . --ext .js,.ts --fix",
     "test": "NODE_ENV=test jest --forceExit --detectOpenHandles",
     "test:watch": "NODE_ENV=test jest --forceExit --detectOpenHandles --watch",
@@ -40,6 +41,7 @@
     "koa-router": "^12.0.1",
     "koa2-cors": "^2.0.6",
     "koa2-swagger-ui": "^5.10.0",
+    "pino": "^8.17.2",
     "swagger-jsdoc": "^6.2.8"
   }
 }
