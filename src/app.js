@@ -6,6 +6,8 @@ async function startApp(config) {
 
   const app = new App(config, logger(loggerOptions));
 
+  await app.init();
+
   return app;
 }
 

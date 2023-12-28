@@ -1,4 +1,7 @@
+const http = require('node:http');
+const Koa = require('koa');
 const globalMiddlewares = require('./globalMiddlewares');
+const routing = require('./routing');
 
 class App {
   constructor(config, logger) {
@@ -20,6 +23,7 @@ class App {
     const koa = new Koa();
 
     globalMiddlewares.init(koa, this);
+    await routing.init(koa, this);
 
     return koa;
   }

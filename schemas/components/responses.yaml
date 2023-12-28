@@ -1,0 +1,6 @@
+getPing:
+  type: object
+  properties:
+    message:
+      type: string
+      example: pong

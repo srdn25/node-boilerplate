@@ -1,0 +1,12 @@
+get:
+  description: Ping server
+  controller: ping.checkAlive
+  tags:
+    - API
+  responses:
+    200:
+      description: Ping server for check status
+      content:
+        application/json:
+          schema:
+            $ref: '../components/responses.yaml#getPing'

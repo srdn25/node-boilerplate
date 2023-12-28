@@ -1,0 +1,13 @@
+openapi: 3.0.0
+info:
+  version: 0.0.1
+  title: Node boilerplate
+  description: Boilerplate for node server, based on koa.js framework
+
+paths:
+  /api/ping:
+    $ref: './endpoints/ping.yaml'
+
+components:
+  responses:
+    $ref: './components/responses.yaml'
