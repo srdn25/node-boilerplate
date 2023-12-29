@@ -1,0 +1,37 @@
+path:
+  id:
+    name: id
+    in: path
+    description: example model ID
+    required: true
+    example: 123
+    type: string
+    maxLength: 32
+    regex: '^[a-zA-Z0-9-_]+$'
+
+query:
+  filter:
+    name: filter
+    in: query
+    description: filter for example model
+    required: false
+    example: 'status=active'
+    type: string
+    maxLength: 100
+    regex: '^[a-zA-Z0-9-_=]+$'
+  page:
+    name: page
+    in: query
+    description: page pagination for example model
+    required: false
+    example: '1'
+    type: string
+    maxLength: 2
+  perPage:
+    name: perPage
+    in: query
+    description: Count items per page. Pagination for example model
+    required: false
+    example: '15'
+    type: string
+    maxLength: 2

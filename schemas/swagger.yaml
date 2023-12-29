@@ -1,4 +1,4 @@
-openapi: 3.0.0
+openapi: 3.0.3
 info:
   version: 0.0.1
   title: Node boilerplate
@@ -7,7 +7,17 @@ info:
 paths:
   /api/ping:
     $ref: './endpoints/ping.yaml'
+  /api/example:
+    $ref: './endpoints/example.yaml'
+  /api/example/{id}:
+    $ref: './endpoints/exampleById.yaml'
 
 components:
   responses:
     $ref: './components/responses.yaml'
+  parameters:
+    $ref: './components/parameters.yaml'
+  requestBodies:
+    $ref: './components/requestBodies.yaml'
+  schemas:
+    $ref: './components/schemas.yaml'

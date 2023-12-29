@@ -1,0 +1,34 @@
+get:
+  description: Example for build get request
+  operationId: example.getAllExamples
+  tags:
+    - Example
+  parameters:
+    - $ref: '../components/parameters.yaml#query/filter'
+    - $ref: '../components/parameters.yaml#query/page'
+    - $ref: '../components/parameters.yaml#query/perPage'
+  responses:
+    200:
+      description: Get example entity
+      content:
+        application/json:
+          schema:
+            $ref: '../components/responses.yaml#getAllExamples'
+post:
+  description: Example for create entity
+  operationId: example.createExample
+  tags:
+    - Example
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../components/requestBodies.yaml#createExample'
+  responses:
+    200:
+      description: Post example entity
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas.yaml#exampleWithId'

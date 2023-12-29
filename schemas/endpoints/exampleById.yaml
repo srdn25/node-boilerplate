@@ -1,0 +1,65 @@
+get:
+  description: Example for build get request
+  operationId: example.getExample
+  tags:
+    - Example
+  parameters:
+    - $ref: '../components/parameters.yaml#path/id'
+    - $ref: '../components/parameters.yaml#query/filter'
+  responses:
+    200:
+      description: Get example entity
+      content:
+        application/json:
+          schema:
+            $ref: '../components/responses.yaml#getExample'
+delete:
+  description: Example for delete entity
+  operationId: example.deleteExample
+  tags:
+    - Example
+  parameters:
+    - $ref: '../components/parameters.yaml#path/id'
+  responses:
+    204:
+      description: Delete example entity
+put:
+  description: Example for full update the entity
+  operationId: example.updateExample
+  tags:
+    - Example
+  parameters:
+    - $ref: '../components/parameters.yaml#path/id'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../components/requestBodies.yaml#createExample'
+  responses:
+    200:
+      description: Updated example entity
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas.yaml#exampleWithId'
+patch:
+  description: Example for partial update the entity
+  operationId: example.partialUpdateExample
+  tags:
+    - Example
+  parameters:
+    - $ref: '../components/parameters.yaml#path/id'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../components/requestBodies.yaml#patchExample'
+  responses:
+    200:
+      description: Updated example entity
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas.yaml#exampleWithId'

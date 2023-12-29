@@ -4,3 +4,24 @@ getPing:
     message:
       type: string
       example: pong
+
+getExample:
+  type: object
+  properties:
+    id:
+      type: string
+      example: 1
+    name:
+      type: string
+      example: example name
+    status:
+      type: string
+      example: disabled
+    filter:
+      type: string
+      example: status=active
+
+getAllExamples:
+  type: array
+  items:
+    $ref: '#/getExample'

@@ -14,21 +14,21 @@ class App {
     // all third-party services should be added here
     // this.serviceApi = new ServiceApiInstance();
 
-    this.koaServer = await this.initMiddlewaresAndRoutes();
+    this.koaServer = this.initMiddlewaresAndRoutes();
     this.httpServer = await this.initHttpServer(this.config.PORT, this.koaServer.callback());
     this.logger.info(`HTTP server started on port ${this.config.PORT}`);
   }
 
-  async initMiddlewaresAndRoutes() {
+  initMiddlewaresAndRoutes() {
     const koa = new Koa();
 
     globalMiddlewares.init(koa, this);
-    await routing.init(koa, this);
+    routing.init(koa, this);
 
     return koa;
   }
 
-  async initHttpServer(port, koaCallback) {
+  initHttpServer(port, koaCallback) {
     const httpServer = http.createServer((req, res) => {
       return koaCallback(req, res);
     });
@@ -36,7 +36,7 @@ class App {
     return new Promise((resolve) => {
       httpServer.listen(port, resolve);
     }).then(() => httpServer);
-  };
+  }
 
   isDebug() {
     return this.debugMode;

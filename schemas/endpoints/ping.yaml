@@ -1,6 +1,6 @@
 get:
   description: Ping server
-  controller: ping.checkAlive
+  operationId: ping.checkAlive
   tags:
     - API
   responses:

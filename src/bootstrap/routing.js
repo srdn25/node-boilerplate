@@ -34,8 +34,18 @@ function prepareControllers(app) {
     }));
 }
 
+function getControllerAndMethod(operationId) {
+  return operationId.split('.');
+}
+
+function transformPathForKoa(inputPath) {
+  const regex = /\{([^}]+)\}/g;
+
+  return inputPath.replace(regex, (match, capture) => `:${capture}`);
+}
+
 module.exports = {
-  async init(server, app) {
+  init(server, app) {
     const router = new Router();
     const spec = yaml.load(fs.readFileSync(path.join(swaggerDir, 'swagger.yaml'), 'utf8'));
 
@@ -51,15 +61,16 @@ module.exports = {
       }
 
       for (const [method, description] of Object.entries(pathDoc)) {
-        const { controller: docController } = description;
-        const [controller, func] = docController.split('.');
+        // eslint-disable-next-line no-unused-vars
+        const { operationId, parameters, requestBody } = description;
+        const [controller, func] = getControllerAndMethod(operationId);
         const handler = controllers?.[controller]?.[func];
         if (!handler) {
-          app.logger.warn(`Handler for ${path} not found`);
+          app.logger.warn(`Handler for [${method.toUpperCase()}] ${path} not found`);
           continue;
         }
 
-        router[method](path, handler);
+        router[method](transformPathForKoa(path), handler);
       }
     }
 
