@@ -5,6 +5,10 @@ class BaseError extends Error {
     super(msg);
     this.name = this.constructor.name;
   }
+
+  serialize() {
+    throw new Error(`Should implement serialize method for ${this.name} error`);
+  }
 }
 
 module.exports = BaseError;

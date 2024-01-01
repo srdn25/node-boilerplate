@@ -1,3 +1,5 @@
+const BaseError = require('../../utils/error/Base');
+
 const MAX_LENGTH_ENDPOINT = 50;
 
 function httpLogger(app, ctx) {
@@ -14,7 +16,10 @@ function httpLogger(app, ctx) {
 
 function errorHandler(app, ctx, error) {
   ctx.status = error.status || 500;
-  ctx.body = error.message || { error: 'Internal Server Error' };
+  const isTransportError = error instanceof BaseError;
+
+  // send response, and then send error message to logs
+  ctx.body = isTransportError ? error.serialize() : error.message || { error: 'Internal Server Error' };
 
   const message = error.message || JSON.stringify(error, (key, value) => {
     if (key !== 'stack') {

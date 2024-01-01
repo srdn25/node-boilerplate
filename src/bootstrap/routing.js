@@ -1,16 +1,27 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { koaSwagger } = require('koa2-swagger-ui');
+const Ajv = require('ajv');
 const yaml = require('js-yaml');
 const Router = require('koa-router');
 const serve = require('koa-static');
 const controllers = require('../api/controllers');
+const ValidationError = require('../utils/error/Validation');
+const { omit } = require('../utils/helper');
+
+const ajv = new Ajv({
+  useDefaults: true,
+  coerceTypes: true,
+});
 
 const swaggerDir = path.join(process.cwd(), 'schemas');
 
-function getEndpointRef(filePath) {
-  const file = filePath.replace(/^\.\//, '');
-  return yaml.load(fs.readFileSync(path.join(swaggerDir, file), 'utf8'));
+function prepareSwaggerSchemaPathString(filePath) {
+  return filePath.replace(/^\.+\//, '');
+}
+
+function loadSwaggerRef(filePath) {
+  return yaml.load(fs.readFileSync(path.join(swaggerDir, filePath), 'utf8'));
 }
 
 function prepareMethods(controller, app) {
@@ -44,6 +55,100 @@ function transformPathForKoa(inputPath) {
   return inputPath.replace(regex, (match, capture) => `:${capture}`);
 }
 
+function loadSwaggerSchemas (parameterArray) {
+  return parameterArray.map((parameter) => {
+    const ref = parameter['$ref'];
+    if (!ref) {
+      return parameter;
+    }
+    const [path, pointer] = ref.split('#');
+    const schema = loadSwaggerRef(prepareSwaggerSchemaPathString(path));
+    return pointer ? resolveSwaggerSchemaPointer(schema, pointer) : schema;
+  })
+}
+
+function resolveSwaggerSchemaPointer (schema, pointer) {
+  const parts = pointer.split('/');
+
+  return parts.reduce((result, part) => {
+    let obj = result[part];
+    if (obj['$ref']) {
+      [obj] = loadSwaggerSchemas([obj]);
+    }
+    return obj;
+  }, schema);
+}
+
+function prepareValidation(parameters, requestBody) {
+  const schema = {
+    type: 'object',
+    properties: {
+      request: {
+        type: 'object',
+        properties: {
+          body: {
+            type: 'object',
+            required: [],
+            properties: {},
+            additionalProperties: false,
+          }
+        },
+      },
+      params: {
+        type: 'object',
+        properties: {},
+        required: [],
+        additionalProperties: false,
+      },
+      query: {
+        type: 'object',
+        properties: {},
+        required: [],
+        additionalProperties: false,
+      },
+    },
+  };
+
+  function processProperty(property, target) {
+    if (property.required) {
+      target.required.push(property.name);
+    }
+    target.properties[property.name] = omit(
+      property,
+      ['name', 'in', 'description', 'example', 'required']
+    );
+  }
+
+  if (parameters) {
+    const loadedSchema = loadSwaggerSchemas(parameters);
+    for (const property of loadedSchema) {
+      const target = property.in === 'query' ? schema.properties.query : schema.properties.params;
+      processProperty(property, target);
+    }
+  }
+
+  if (requestBody) {
+    const body = requestBody?.content?.['application/json']?.schema;
+    if (body) {
+      const [loadedSchema] = loadSwaggerSchemas([body]);
+      if (loadedSchema) {
+        processProperty(loadedSchema, schema.properties.request.properties.body);
+      }
+    }
+  }
+
+  return (ctx, next) => {
+    const isValidRequest = ajv.compile(schema);
+    if (isValidRequest(ctx)) {
+      return next();
+    }
+
+    throw new ValidationError({
+      errors: isValidRequest.errors,
+    });
+  }
+}
+
 module.exports = {
   init(server, app) {
     const router = new Router();
@@ -57,12 +162,16 @@ module.exports = {
     for (const [path, doc] of Object.entries(spec.paths)) {
       let pathDoc = doc;
       if (doc.$ref) {
-        pathDoc = getEndpointRef(doc.$ref);
+        const filePath = prepareSwaggerSchemaPathString(doc.$ref);
+        pathDoc = loadSwaggerRef(filePath);
       }
 
       for (const [method, description] of Object.entries(pathDoc)) {
         // eslint-disable-next-line no-unused-vars
         const { operationId, parameters, requestBody } = description;
+
+        const validation = prepareValidation(parameters, requestBody);
+
         const [controller, func] = getControllerAndMethod(operationId);
         const handler = controllers?.[controller]?.[func];
         if (!handler) {
@@ -70,7 +179,7 @@ module.exports = {
           continue;
         }
 
-        router[method](transformPathForKoa(path), handler);
+        router[method](transformPathForKoa(path), validation, handler);
       }
     }
 

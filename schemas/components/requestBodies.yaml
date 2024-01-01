@@ -1,12 +1,5 @@
 createExample:
-  $ref: './schemas.yaml#example'
+  $ref: '../components/schemas.yaml#example'
 
 patchExample:
-  type: object
-  properties:
-    name:
-      type: string
-      example: example name
-    status:
-      type: string
-      example: disabled
+  $ref: '../components/schemas.yaml#example'

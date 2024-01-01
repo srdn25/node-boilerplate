@@ -1,23 +1,25 @@
 example:
   type: object
+  required:
+    - name
+    - status
   properties:
     name:
       type: string
       example: example name
-      required: true
     status:
       type: string
       example: disabled
-      required: true
 
 id:
   type: string
   example: 1
-  required: true
 
 exampleWithId:
   allOf:
     - type: object
+      required:
+        - id
       properties:
         id:
           $ref: '#/id'

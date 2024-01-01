@@ -51,7 +51,6 @@ patch:
   parameters:
     - $ref: '../components/parameters.yaml#path/id'
   requestBody:
-    required: true
     content:
       application/json:
         schema:
