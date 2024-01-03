@@ -41,6 +41,12 @@ class App {
   isDebug() {
     return this.debugMode;
   }
+
+  async gracefulShutdown() {
+    this.logger.info('Stopping Http server')
+    await this.httpServer.close();
+    this.logger.info('Http server closed')
+  }
 }
 
 module.exports = App;

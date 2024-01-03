@@ -6,7 +6,7 @@ path:
     required: true
     example: 123
     type: string
-    maxLength: 32
+    maxLength: 36
     pattern: '^[a-zA-Z0-9-_]+$'
 
 query:

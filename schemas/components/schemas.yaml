@@ -7,9 +7,12 @@ example:
     name:
       type: string
       example: example name
+      required: true
     status:
       type: string
       example: disabled
+      required: true
+
 
 id:
   type: string

@@ -2,16 +2,12 @@
 function getExample(app) {
   return (ctx) => {
     const { id } = ctx.params;
-    const { filter, page, perPage } = ctx.query;
 
-    ctx.body = [{
+    ctx.body = {
       id,
       name: 'Example model',
       status: 'active',
-      filter,
-      page,
-      perPage,
-    }];
+    };
   };
 }
 
@@ -65,12 +61,12 @@ function getAllExamples(app) {
   return (ctx) => {
     const { page, perPage, filter } = ctx.query;
 
-    ctx.body = {
+    ctx.body = [{
       page,
       method: ctx.request.method,
       perPage,
       filter,
-    }
+    }];
   };
 }
 

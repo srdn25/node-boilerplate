@@ -63,6 +63,14 @@ function loadSwaggerSchemas (parameterArray) {
     }
     const [path, pointer] = ref.split('#');
     const schema = loadSwaggerRef(prepareSwaggerSchemaPathString(path));
+
+    for (const [key, props] of Object.entries(schema)) {
+      const ref = props['$ref'];
+      if (ref) {
+        schema[key] = loadSwaggerSchemas(Array.isArray(props) ? props : [props]);
+      }
+    }
+
     return pointer ? resolveSwaggerSchemaPointer(schema, pointer) : schema;
   })
 }
@@ -132,7 +140,10 @@ function prepareValidation(parameters, requestBody) {
     if (body) {
       const [loadedSchema] = loadSwaggerSchemas([body]);
       if (loadedSchema) {
-        processProperty(loadedSchema, schema.properties.request.properties.body);
+        for (const [name, property] of Object.entries(loadedSchema[0].properties)) {
+          property.name = name;
+          processProperty(property, schema.properties.request.properties.body);
+        }
       }
     }
   }
