@@ -1,6 +1,10 @@
 # Boilerplate for node.js
 
-Boilerplate for node.js server based on koa.js framework
+Boilerplate for Node.js server based on koa.js framework
+Main feature is use one schema for:
+- validation requests
+- build swagger documentation
+- create router
 
 This template use next packages:
 - jest
